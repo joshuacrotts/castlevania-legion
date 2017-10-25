@@ -20,7 +20,7 @@ import com.joshuacrotts.standards.StandardHandler;
 import com.joshuacrotts.standards.StandardID;
 import com.joshuacrotts.standards.StdOps;
 
-public class SwordMan extends Enemi {
+public class SwordMan extends Enemy {
 
     private VampireKiller sword;
 

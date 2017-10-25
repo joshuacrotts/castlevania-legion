@@ -18,7 +18,7 @@ import com.joshuacrotts.standards.StandardHandler;
 import com.joshuacrotts.standards.StandardID;
 import com.joshuacrotts.standards.StdOps;
 
-public class BasicZombie extends Enemi {
+public class BasicZombie extends Enemy {
     
     public BasicZombie(double x, double y, StandardHandler sh, Player player) {
         super(x, y, sh, player);

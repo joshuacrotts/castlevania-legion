@@ -18,7 +18,7 @@ import com.joshuacrotts.standards.StandardHandler;
 import com.joshuacrotts.standards.StandardID;
 import com.joshuacrotts.standards.StdOps;
 
-public class BlueKnight extends Enemi {
+public class BlueKnight extends Enemy {
 
     //private BufferedImage stillL; private BufferedImage stillR;
     public BlueKnight(double x, double y, StandardHandler sh, Player player) {

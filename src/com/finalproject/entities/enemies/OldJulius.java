@@ -22,7 +22,7 @@ import com.joshuacrotts.standards.StandardID;
 import com.joshuacrotts.standards.StdOps;
 import com.joshuacrotts.standards.StandardGameObject.Direction;
 
-public class OldJulius extends Enemi {
+public class OldJulius extends Enemy {
     //Constant sprites
 
     @SuppressWarnings("unused")

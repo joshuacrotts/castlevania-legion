@@ -18,7 +18,7 @@ import com.joshuacrotts.standards.StandardHandler;
 import com.joshuacrotts.standards.StandardID;
 import com.joshuacrotts.standards.StdOps;
 
-public class NewJulius extends Enemi {
+public class NewJulius extends Enemy {
 
     //Constant sprites
     @SuppressWarnings("unused")

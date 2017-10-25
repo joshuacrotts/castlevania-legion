@@ -16,13 +16,13 @@ import java.awt.Graphics2D;
  *
  * @author Alisson
  */
-public abstract class Enemi extends StandardGameObject {
+public abstract class Enemy extends StandardGameObject {
 
     protected Player player;
     protected StandardHandler sh;
     protected int maxHealth;
 
-    public Enemi(double x, double y, StandardHandler sh, Player player) {
+    public Enemy(double x, double y, StandardHandler sh, Player player) {
         super(x, y, StandardID.Enemy);
 
         this.player = player;
