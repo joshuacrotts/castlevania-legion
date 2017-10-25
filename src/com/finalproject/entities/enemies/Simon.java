@@ -22,7 +22,7 @@ import com.joshuacrotts.standards.StandardID;
 import com.joshuacrotts.standards.StdOps;
 import com.joshuacrotts.standards.StandardGameObject.Direction;
 
-public class Simon extends StandardGameObject {
+public class Simon extends Enemy {
 
     //Constant sprites
     @SuppressWarnings("unused")
@@ -30,31 +30,19 @@ public class Simon extends StandardGameObject {
     private BufferedImage stillR;
 
     //Global instance variables
-    public StandardHandler sh;
-    private Player player;
     private VampireKiller whip;
 
     private double dist = 0;
 
     public Simon(double x, double y, StandardHandler sh, Player player) {
-        super(x, y, StandardID.Enemy);
+        super(x, y, sh, player);
 
-        this.sh = sh;
-        this.player = player;
-
-        try {
-            this.initImages();
-            this.initAnimators();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
 
         this.currentSprite = this.stillR;
         this.velX = -1;
 
         this.whip = new VampireKiller((StandardCollisionHandler) this.sh, 30d, new Rectangle((int) 54, (int) (25), 170, 20));
-
-        this.health = 25;
+        setInitialHealth(25);
     }
 
     public void tick() {
@@ -149,7 +137,8 @@ public class Simon extends StandardGameObject {
 
     }
 
-    private void initImages() {
+    @Override
+    void initImages() {
 
         this.leftImages = new BufferedImage[5];
         this.rightImages = new BufferedImage[this.leftImages.length];
@@ -183,7 +172,8 @@ public class Simon extends StandardGameObject {
         this.height = (int) (this.height / (this.leftImages.length + this.rightImages.length));
     }
 
-    private void initAnimators() {
+    @Override
+    void initAnimators() {
         this.lefts = new StandardAnimator(new ArrayList<BufferedImage>(Arrays.asList(leftImages)), 1 / 8d, this, StandardAnimator.PRIORITY_3RD);
         this.rights = new StandardAnimator(new ArrayList<BufferedImage>(Arrays.asList(this.rightImages)), 1 / 8d, this, StandardAnimator.PRIORITY_3RD);
         this.aLefts = new StandardAnimator(new ArrayList<BufferedImage>(Arrays.asList(this.attackLeftImages)), 1 / 5d, this, StandardAnimator.PRIORITY_3RD);

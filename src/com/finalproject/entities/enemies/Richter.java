@@ -23,7 +23,7 @@ import com.joshuacrotts.standards.StandardHandler;
 import com.joshuacrotts.standards.StandardID;
 import com.joshuacrotts.standards.StdOps;
 
-public class Richter extends StandardGameObject {
+public class Richter extends Enemy {
 
     //Other animators and sprites
     private BufferedImage[] hurtLeft = null;
@@ -32,8 +32,6 @@ public class Richter extends StandardGameObject {
     private StandardAnimator hurtsR = null;
 
     //Global instance variables
-    public StandardHandler sh;
-    private Player player;
     private VampireKiller whip;
     public boolean tryJump = false;
 
@@ -44,20 +42,12 @@ public class Richter extends StandardGameObject {
     private boolean fdp = true;
 
     public Richter(double x, double y, StandardHandler sh, Player player) {
-        super(x, y, StandardID.Enemy);
+        super(x, y, sh, player);
 
-        this.sh = sh;
-        this.player = player;
         this.whip = new VampireKiller((StandardCollisionHandler) this.sh, 20, new Rectangle((int) 54, (int) (25), 170, 20), 0.35);
 
-        try {
-            this.initImages();
-            this.initAnimators();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
 
-        this.health = 40;
+        setInitialHealth(40);
 
         this.firstDeathPass = true;
 
@@ -143,7 +133,9 @@ public class Richter extends StandardGameObject {
 
     }
 
+    @Override
     public void render(Graphics2D g2) {
+        super.render(g2);
         if (this.health > 0) {
             double xo = (lastDir == Direction.Left) ? currentSprite.getWidth() - this.width : 0;
             g2.drawImage(this.currentSprite, (int) (x - xo), (int) y, null);
@@ -157,7 +149,8 @@ public class Richter extends StandardGameObject {
 
     }
 
-    private void initImages() {
+    @Override
+    void initImages() {
 
         this.leftImages = new BufferedImage[8];
         this.rightImages = new BufferedImage[this.leftImages.length];
@@ -200,7 +193,8 @@ public class Richter extends StandardGameObject {
         this.height = (int) (this.height / (this.leftImages.length + this.rightImages.length));
     }
 
-    private void initAnimators() {
+    @Override
+    void initAnimators() {
         this.lefts = new StandardAnimator(new ArrayList<BufferedImage>(Arrays.asList(this.leftImages)), 1 / 8d, this, StandardAnimator.PRIORITY_3RD);
         this.rights = new StandardAnimator(new ArrayList<BufferedImage>(Arrays.asList(this.rightImages)), 1 / 8d, this, StandardAnimator.PRIORITY_3RD);
         this.aLefts = new StandardAnimator(new ArrayList<BufferedImage>(Arrays.asList(this.attackLeftImages)), 1 / 30d, this, StandardAnimator.PRIORITY_3RD);

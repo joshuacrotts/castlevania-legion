@@ -19,12 +19,10 @@ import com.joshuacrotts.standards.StandardHandler;
 import com.joshuacrotts.standards.StandardID;
 import com.joshuacrotts.standards.StdOps;
 
-public class Skeleton extends StandardGameObject {
+public class Skeleton extends Enemy {
 
     @SuppressWarnings("unused")
     private StandardGame stdGame;
-    public StandardHandler sh;
-    private Player player;
 
     //	public static final double MAX_SPEED_X = 2.0;
     //	public static final double ACC_X = 0.75;
@@ -32,22 +30,10 @@ public class Skeleton extends StandardGameObject {
     private static double BOOST;
 
     public Skeleton(double x, double y, StandardHandler sh, Player player) {
-        super(x, y, StandardID.Enemy);
-
-        this.player = player;
-
-        try {
-            this.initImages();
-            this.initAnimators();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        this.sh = sh;
+        super(x, y, sh, player);
 
         this.currentSprite = this.leftImages[0];
-
-        this.health = 10;
+        setInitialHealth(10);
 
         this.velX = -1;
     }
@@ -90,6 +76,7 @@ public class Skeleton extends StandardGameObject {
 
     @Override
     public void render(Graphics2D g2) {
+        super.render(g2);
         if (this.health > 0) {
             g2.drawImage(this.currentSprite, (int) this.x, (int) this.y, null);
         }
@@ -100,7 +87,8 @@ public class Skeleton extends StandardGameObject {
 
     }
 
-    private void initImages() {
+    @Override
+    void initImages() {
 
         this.leftImages = new BufferedImage[4];
         this.rightImages = new BufferedImage[4];
@@ -120,7 +108,8 @@ public class Skeleton extends StandardGameObject {
         this.height = (this.height / (leftImages.length + rightImages.length));
     }
 
-    public void initAnimators() {
+    @Override
+    void initAnimators() {
 
         this.lefts = new StandardAnimator(new ArrayList<BufferedImage>(Arrays.asList(this.leftImages)), 1 / 5d, this, StandardAnimator.PRIORITY_3RD);
         this.rights = new StandardAnimator(new ArrayList<BufferedImage>(Arrays.asList(this.rightImages)), 1 / 5d, this, StandardAnimator.PRIORITY_3RD);
