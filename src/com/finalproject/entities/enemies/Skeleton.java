@@ -19,136 +19,134 @@ import com.joshuacrotts.standards.StandardHandler;
 import com.joshuacrotts.standards.StandardID;
 import com.joshuacrotts.standards.StdOps;
 
-public class Skeleton extends StandardGameObject{
-	@SuppressWarnings("unused")
-	private StandardGame stdGame;
-	public StandardHandler sh;
-	private Player player;
+public class Skeleton extends StandardGameObject {
 
-	//	public static final double MAX_SPEED_X = 2.0;
-	//	public static final double ACC_X = 0.75;
-	@SuppressWarnings("unused")
-	private static double BOOST;
+    @SuppressWarnings("unused")
+    private StandardGame stdGame;
+    public StandardHandler sh;
+    private Player player;
 
-	public Skeleton(double x, double y, StandardHandler sh, Player player){
-		super(x, y, StandardID.Enemy);
+    //	public static final double MAX_SPEED_X = 2.0;
+    //	public static final double ACC_X = 0.75;
+    @SuppressWarnings("unused")
+    private static double BOOST;
 
-		this.player = player;
+    public Skeleton(double x, double y, StandardHandler sh, Player player) {
+        super(x, y, StandardID.Enemy);
 
-		try{
-			this.initImages();
-			this.initAnimators();
-		}catch(Exception e){
-			e.printStackTrace();
-		}
+        this.player = player;
 
-		this.sh = sh;
+        try {
+            this.initImages();
+            this.initAnimators();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
-		this.currentSprite = this.leftImages[0];
+        this.sh = sh;
 
-		this.health = 10;
+        this.currentSprite = this.leftImages[0];
 
-		this.velX = -1;
-	}
+        this.health = 10;
 
+        this.velX = -1;
+    }
 
-	@Override
-	public void tick() {
+    @Override
+    public void tick() {
 
-		if(this.health > 0){
+        if (this.health > 0) {
 
-			this.x += (int) this.velX;
-			this.y += (int) this.velY;
-			this.velY = (this.velY + StandardGameObject.gravity);
+            this.x += (int) this.velX;
+            this.y += (int) this.velY;
+            this.velY = (this.velY + StandardGameObject.gravity);
 
-			this.velX = (player.x - this.x) * 0.01;
-			
-			if(Math.abs(this.player.x - this.x) > 500) velX = 0;
-			
-			if(this.velX < 0){
-				this.lefts.animate();
-			}else{
-				this.rights.animate();
-			}
-		}
-		
-		this.checkDeath();
-		
-		this.dropCoins();
+            this.velX = (player.x - this.x) * 0.01;
 
-		if(this.deathParticles != null){
-			this.deathParticles.tick();
-		}
+            if (Math.abs(this.player.x - this.x) > 500) {
+                velX = 0;
+            }
 
-		if(this.y > 1000 || (this.deathParticles != null && this.deathParticles.size() == 0)){
-			this.sh.removeEntity(this);
-		}
+            if (this.velX < 0) {
+                this.lefts.animate();
+            } else {
+                this.rights.animate();
+            }
+        }
 
-	}
+        this.checkDeath();
 
+        this.dropCoins();
 
-	@Override
-	public void render(Graphics2D g2) {
-		if(this.health > 0){
-			g2.drawImage(this.currentSprite, (int) this.x, (int) this.y, null);
-		}
-		
-		if(this.deathParticles != null){
-			this.deathParticles.render(g2);
-		}
+        if (this.deathParticles != null) {
+            this.deathParticles.tick();
+        }
 
-	}
+        if (this.y > 1000 || (this.deathParticles != null && this.deathParticles.size() == 0)) {
+            this.sh.removeEntity(this);
+        }
 
-	private void initImages(){
+    }
 
-		this.leftImages = new BufferedImage[4];
-		this.rightImages = new BufferedImage[4];
+    @Override
+    public void render(Graphics2D g2) {
+        if (this.health > 0) {
+            g2.drawImage(this.currentSprite, (int) this.x, (int) this.y, null);
+        }
 
-		try{
-			for(int i = 0; i < this.leftImages.length; i++){
-				this.leftImages[i] = ImageIO.read(new File("res/sprites/skeleton0/sk_l_"+i+".png"));
-				this.rightImages[i] = ImageIO.read(new File("res/sprites/skeleton0/sk_r_"+i+".png"));
-				this.width += leftImages[i].getWidth() + rightImages[i].getWidth();
-				this.height += leftImages[i].getHeight() + rightImages[i].getHeight();
-			}	
-		}catch(Exception e){
-			e.printStackTrace();
-		}
+        if (this.deathParticles != null) {
+            this.deathParticles.render(g2);
+        }
 
-		this.width =  (this.width / (leftImages.length + rightImages.length));
-		this.height = (this.height / (leftImages.length + rightImages.length));
-	}
+    }
 
-	public void initAnimators(){
+    private void initImages() {
 
-		this.lefts = new StandardAnimator(new ArrayList<BufferedImage>(Arrays.asList(this.leftImages)),1/5d, this, StandardAnimator.PRIORITY_3RD);
-		this.rights = new StandardAnimator(new ArrayList<BufferedImage>(Arrays.asList(this.rightImages)),1/5d, this, StandardAnimator.PRIORITY_3RD);
-	}
-	
-    
-    public void collide(StandardGameObject sgo)
-    {
-        if(sgo instanceof Player && sgo.health >= 0){
-        	
-        	sgo.hurtEntity(-45);
-        	Game.audioBuff.Play_Soma_Hurt(StdOps.rand(0, 3));
-        	
+        this.leftImages = new BufferedImage[4];
+        this.rightImages = new BufferedImage[4];
+
+        try {
+            for (int i = 0; i < this.leftImages.length; i++) {
+                this.leftImages[i] = ImageIO.read(new File("res/sprites/skeleton0/sk_l_" + i + ".png"));
+                this.rightImages[i] = ImageIO.read(new File("res/sprites/skeleton0/sk_r_" + i + ".png"));
+                this.width += leftImages[i].getWidth() + rightImages[i].getWidth();
+                this.height += leftImages[i].getHeight() + rightImages[i].getHeight();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        this.width = (this.width / (leftImages.length + rightImages.length));
+        this.height = (this.height / (leftImages.length + rightImages.length));
+    }
+
+    public void initAnimators() {
+
+        this.lefts = new StandardAnimator(new ArrayList<BufferedImage>(Arrays.asList(this.leftImages)), 1 / 5d, this, StandardAnimator.PRIORITY_3RD);
+        this.rights = new StandardAnimator(new ArrayList<BufferedImage>(Arrays.asList(this.rightImages)), 1 / 5d, this, StandardAnimator.PRIORITY_3RD);
+    }
+
+    public void collide(StandardGameObject sgo) {
+        if (sgo instanceof Player && sgo.health >= 0) {
+
+            sgo.hurtEntity(-45);
+            Game.audioBuff.Play_Soma_Hurt(StdOps.rand(0, 3));
+
         }
     }
 
-	
-	private void dropCoins(){
-		if(this.health < 0){
-			
-			int amt = StdOps.rand(0, 5);
-			
-			if(this.fdp){
-				for(int i = 0; i < amt; i++){
-					this.sh.addEntity(new Coin(this.x, this.y, (byte) StdOps.rand(0, 40), this.player, (StandardCollisionHandler) this.sh));
-				}
-			}
-			this.fdp = false;
-		}
-	}
+    private void dropCoins() {
+        if (this.health < 0) {
+
+            int amt = StdOps.rand(0, 5);
+
+            if (this.fdp) {
+                for (int i = 0; i < amt; i++) {
+                    this.sh.addEntity(new Coin(this.x, this.y, (byte) StdOps.rand(0, 40), this.player, (StandardCollisionHandler) this.sh));
+                }
+            }
+            this.fdp = false;
+        }
+    }
 
 }

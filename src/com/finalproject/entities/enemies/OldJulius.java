@@ -22,176 +22,171 @@ import com.joshuacrotts.standards.StandardID;
 import com.joshuacrotts.standards.StdOps;
 import com.joshuacrotts.standards.StandardGameObject.Direction;
 
-public class OldJulius extends StandardGameObject{
-	//Constant sprites
-	@SuppressWarnings("unused")
-	private BufferedImage stillL; 
-	@SuppressWarnings("unused")
-	private BufferedImage stillR;
+public class OldJulius extends Enemi {
+    //Constant sprites
 
-	//Global instance variables
-	public StandardHandler sh;
-	private Player player;
-	private VampireKiller whip;
-	
-	private double dist = 0;
+    @SuppressWarnings("unused")
+    private BufferedImage stillL;
+    @SuppressWarnings("unused")
+    private BufferedImage stillR;
 
-	public OldJulius(double x, double y, StandardHandler sh, Player player){
-		super(x, y, StandardID.Enemy);
-		this.sh = sh;
-		this.player = player;
-		this.whip = new VampireKiller((StandardCollisionHandler) this.sh, 50f, new Rectangle((int) 54, (int) (25), 140, 20));
-		try{
-			this.initImages();
-			this.initAnimators();
-		}catch(Exception e){
-			e.printStackTrace();
-		}
+    //Global instance variables
+    private VampireKiller whip;
 
-		this.health = 20;
+    private double dist = 0;
 
-		this.velX = -2;
-	}
+    public OldJulius(double x, double y, StandardHandler sh, Player player) {
+        super(x, y, sh, player);
 
-	public void tick(){
-		if(this.health > 0){
+        this.whip = new VampireKiller((StandardCollisionHandler) this.sh, 50f, new Rectangle((int) 54, (int) (25), 140, 20));
+        setInitialHealth(20);
+        this.velX = -2;
+    }
 
-			this.x +=  this.velX;
-			this.y += (int) this.velY;
-			whip.attack(this, player);
+    public void tick() {
+        if (this.health > 0) {
 
-			double dx = Math.abs(x - player.x);
-			double dy = Math.abs(y - player.y);
-			double lastDist = dist;
-			
-			this.dist = (dx > dy) ? dx : dy;
+            this.x += this.velX;
+            this.y += (int) this.velY;
+            whip.attack(this, player);
 
-			
-			
-			this.velX = (player.x - this.x) * /*Math.random() * 0.01 +*/ 0.01;
-			this.velY = (this.velY + StandardGameObject.gravity);
+            double dx = Math.abs(x - player.x);
+            double dy = Math.abs(y - player.y);
+            double lastDist = dist;
 
-			if(Math.abs(this.player.x - this.x) > 500) velX = 0;
-			
-			if(dist >= lastDist && standing && Math.random() < 0.1)
-				velY -= 5;
+            this.dist = (dx > dy) ? dx : dy;
 
-			if(this.whip.active){
-				this.velX = 0;
-			}
+            this.velX = (player.x - this.x) * /*Math.random() * 0.01 +*/ 0.01;
+            this.velY = (this.velY + StandardGameObject.gravity);
 
-			if(this.velX < 0){
-				lastDir = Direction.Left;
-				this.lefts.animate();
-			}else if(this.velX > 0){
-				lastDir = Direction.Right;
-				this.rights.animate();
-			}
+            if (Math.abs(this.player.x - this.x) > 500) {
+                velX = 0;
+            }
 
-			//Clause for if they're hurt
-			if(this.hurt){
+            if (dist >= lastDist && standing && Math.random() < 0.1) {
+                velY -= 5;
+            }
 
-				//If they're facing right, they'll fly left when hurt
-				if(this.lastDir == Direction.Right) {
-					this.velX = -20f;
-				}
-				//If they're facing left, they'll fly right when flying
-				else{ 
-					this.velX = 20f;
-				}
-				//Either way, when hurt, they'll fly up and back. ******NEEDS FIXING******
-				//this.jump.execute();
-			}else{
+            if (this.whip.active) {
+                this.velX = 0;
+            }
 
-			}
+            if (this.velX < 0) {
+                lastDir = Direction.Left;
+                this.lefts.animate();
+            } else if (this.velX > 0) {
+                lastDir = Direction.Right;
+                this.rights.animate();
+            }
 
-			this.hurt = false; //Has to be set here so they won't continuously fly back.
-		}
-		
-		this.checkDeath();
-		
-		this.dropCoins();
+            //Clause for if they're hurt
+            if (this.hurt) {
 
-		if(this.deathParticles != null || (this.deathParticles != null && this.deathParticles.size() == 0)){
-			this.deathParticles.tick();
-		}
+                //If they're facing right, they'll fly left when hurt
+                if (this.lastDir == Direction.Right) {
+                    this.velX = -20f;
+                } //If they're facing left, they'll fly right when flying
+                else {
+                    this.velX = 20f;
+                }
+                //Either way, when hurt, they'll fly up and back. ******NEEDS FIXING******
+                //this.jump.execute();
+            } else {
 
-		if(this.y > 1000 || (this.deathParticles != null && this.deathParticles.size() == 0)){
-			this.sh.removeEntity(this);
-		}
-	}
+            }
 
-	public void render(Graphics2D g2){
-		if(this.health > 0){
-			double xo = (this.lastDir == Direction.Left) ? currentSprite.getWidth() - this.width : 0;
-			g2.drawImage(this.currentSprite, (int) (x - xo), (int) y, null);
-		}
+            this.hurt = false; //Has to be set here so they won't continuously fly back.
+        }
 
-		if(this.deathParticles != null){
-			StandardDraw.Handler(this.deathParticles);
-		}
+        this.checkDeath();
 
-	}
+        this.dropCoins();
 
-	private void initImages(){
+        if (this.deathParticles != null || (this.deathParticles != null && this.deathParticles.size() == 0)) {
+            this.deathParticles.tick();
+        }
 
-		this.leftImages = new BufferedImage[10]; this.rightImages = new BufferedImage[this.leftImages.length];
-		this.attackLeftImages = new BufferedImage[15]; this.attackRightImages = new BufferedImage[this.attackLeftImages.length];
-
-		try{
-			this.stillL = ImageIO.read(new File("res/sprites/oldjulius/oj_s_l.png"));
-			this.stillR = ImageIO.read(new File("res/sprites/oldjulius/oj_s_r.png"));
-
-			//Load in the left & right walking imgs
-			for(int i = 0; i < leftImages.length; i++){
-				this.leftImages[i] = ImageIO.read(new File("res/sprites/oldjulius/oj_l"+i+".png"));
-				this.rightImages[i] = ImageIO.read(new File("res/sprites/oldjulius/oj_r"+i+".png"));
-
-				this.width += this.leftImages[i].getWidth() + this.rightImages[i].getWidth();
-				this.height += this.leftImages[i].getHeight() + this.rightImages[i].getHeight();
-			}
-
-			//Load in the left & right attack images
-			for(int i = 0; i < attackLeftImages.length; i++){
-				this.attackLeftImages[i] = ImageIO.read(new File("res/sprites/oldjulius/oj_a_l"+i+".png"));
-				this.attackRightImages[i] = ImageIO.read(new File("res/sprites/oldjulius/oj_a_r"+i+".png"));
-			}
-		}catch(Exception e){ e.printStackTrace(); }
-
-		this.width = (int) (this.width / (this.leftImages.length + this.rightImages.length));
-		this.height = (int) (this.height / (this.leftImages.length + this.rightImages.length));
-	}
-
-	private void initAnimators(){
-		this.lefts = new StandardAnimator(new ArrayList<BufferedImage>(Arrays.asList(this.leftImages)), 1/16d, this, StandardAnimator.PRIORITY_3RD);
-		this.rights = new StandardAnimator(new ArrayList<BufferedImage>(Arrays.asList(this.rightImages)), 1/16d, this, StandardAnimator.PRIORITY_3RD);
-		this.aLefts = new StandardAnimator(new ArrayList<BufferedImage>(Arrays.asList(this.attackLeftImages)), 1/16d, this, StandardAnimator.PRIORITY_3RD);
-		this.aRights = new StandardAnimator(new ArrayList<BufferedImage>(Arrays.asList(this.attackRightImages)), 1/16d, this, StandardAnimator.PRIORITY_3RD);
-	}
-	
-    
-    public void collide(StandardGameObject sgo)
-    {
-        if(sgo instanceof Player && sgo.health >= 0){
-        	
-        	sgo.hurtEntity(-10);
-        	Game.audioBuff.Play_Soma_Hurt(StdOps.rand(0, 3));
-        	
+        if (this.y > 1000 || (this.deathParticles != null && this.deathParticles.size() == 0)) {
+            this.sh.removeEntity(this);
         }
     }
 
-	
-	private void dropCoins(){
-		if(this.health < 0){
-			
-			int amt = StdOps.rand(0, 5);
-			
-			if(this.fdp){
-				for(int i = 0; i < amt; i++){
-					this.sh.addEntity(new Coin(this.x, this.y, (byte) StdOps.rand(0, 40), this.player, (StandardCollisionHandler) this.sh));
-				}
-			}
-			this.fdp = false;
-		}
-	}
+    @Override
+    public void render(Graphics2D g2) {
+        super.render(g2);
+        if (this.health > 0) {
+            double xo = (this.lastDir == Direction.Left) ? currentSprite.getWidth() - this.width : 0;
+            g2.drawImage(this.currentSprite, (int) (x - xo), (int) y, null);
+        }
+
+        if (this.deathParticles != null) {
+            StandardDraw.Handler(this.deathParticles);
+        }
+
+    }
+
+    @Override
+    void initImages() {
+
+        this.leftImages = new BufferedImage[10];
+        this.rightImages = new BufferedImage[this.leftImages.length];
+        this.attackLeftImages = new BufferedImage[15];
+        this.attackRightImages = new BufferedImage[this.attackLeftImages.length];
+
+        try {
+            this.stillL = ImageIO.read(new File("res/sprites/oldjulius/oj_s_l.png"));
+            this.stillR = ImageIO.read(new File("res/sprites/oldjulius/oj_s_r.png"));
+
+            //Load in the left & right walking imgs
+            for (int i = 0; i < leftImages.length; i++) {
+                this.leftImages[i] = ImageIO.read(new File("res/sprites/oldjulius/oj_l" + i + ".png"));
+                this.rightImages[i] = ImageIO.read(new File("res/sprites/oldjulius/oj_r" + i + ".png"));
+
+                this.width += this.leftImages[i].getWidth() + this.rightImages[i].getWidth();
+                this.height += this.leftImages[i].getHeight() + this.rightImages[i].getHeight();
+            }
+
+            //Load in the left & right attack images
+            for (int i = 0; i < attackLeftImages.length; i++) {
+                this.attackLeftImages[i] = ImageIO.read(new File("res/sprites/oldjulius/oj_a_l" + i + ".png"));
+                this.attackRightImages[i] = ImageIO.read(new File("res/sprites/oldjulius/oj_a_r" + i + ".png"));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        this.width = (int) (this.width / (this.leftImages.length + this.rightImages.length));
+        this.height = (int) (this.height / (this.leftImages.length + this.rightImages.length));
+    }
+
+    @Override
+    void initAnimators() {
+        this.lefts = new StandardAnimator(new ArrayList<BufferedImage>(Arrays.asList(this.leftImages)), 1 / 16d, this, StandardAnimator.PRIORITY_3RD);
+        this.rights = new StandardAnimator(new ArrayList<BufferedImage>(Arrays.asList(this.rightImages)), 1 / 16d, this, StandardAnimator.PRIORITY_3RD);
+        this.aLefts = new StandardAnimator(new ArrayList<BufferedImage>(Arrays.asList(this.attackLeftImages)), 1 / 16d, this, StandardAnimator.PRIORITY_3RD);
+        this.aRights = new StandardAnimator(new ArrayList<BufferedImage>(Arrays.asList(this.attackRightImages)), 1 / 16d, this, StandardAnimator.PRIORITY_3RD);
+    }
+
+    public void collide(StandardGameObject sgo) {
+        if (sgo instanceof Player && sgo.health >= 0) {
+
+            sgo.hurtEntity(-10);
+            Game.audioBuff.Play_Soma_Hurt(StdOps.rand(0, 3));
+
+        }
+    }
+
+    private void dropCoins() {
+        if (this.health < 0) {
+
+            int amt = StdOps.rand(0, 5);
+
+            if (this.fdp) {
+                for (int i = 0; i < amt; i++) {
+                    this.sh.addEntity(new Coin(this.x, this.y, (byte) StdOps.rand(0, 40), this.player, (StandardCollisionHandler) this.sh));
+                }
+            }
+            this.fdp = false;
+        }
+    }
 }

@@ -6,28 +6,31 @@ import com.finalproject.entities.Player;
 import com.finalproject.main.Game;
 import com.finalproject.weapons.MeleeWeapon;
 
-public class MeleeCommand extends Command{
+public class MeleeCommand extends Command {
 
-	private Player player;
-	//private MeleeWeapon weapon;
-	private long time = 0;
-	private long delay;
-	public MeleeCommand(Player player, MeleeWeapon weapon, double delay){
-		this.player = player;
-		this.delay = (long)(delay * C.NANO);
-		//this.weapon = weapon;
-	}
+    private Player player;
+    //private MeleeWeapon weapon;
+    private long time = 0;
+    private long delay;
 
-	@Override
-	public void execute() {
+    public MeleeCommand(Player player, MeleeWeapon weapon, double delay) {
+        this.player = player;
+        this.delay = (long) (delay * C.NANO);
+        //this.weapon = weapon;
+    }
 
-		long current = System.nanoTime();
-		long interval = current - time;
-		if(this.player.usingMelee || interval - delay < 0) return;
-		
-		time = current;
-		this.player.usingMelee = true;
-		Game.audioBuff.Play_Soma_Attack();
+    @Override
+    public void execute() {
 
-	}
+        long current = System.nanoTime();
+        long interval = current - time;
+        if (this.player.usingMelee || interval - delay < 0) {
+            return;
+        }
+
+        time = current;
+        this.player.usingMelee = true;
+        Game.audioBuff.Play_Soma_Attack();
+
+    }
 }

@@ -23,199 +23,204 @@ import com.joshuacrotts.standards.StandardHandler;
 import com.joshuacrotts.standards.StandardID;
 import com.joshuacrotts.standards.StdOps;
 
-public class Richter extends StandardGameObject{
+public class Richter extends StandardGameObject {
 
-	//Other animators and sprites
-	private BufferedImage[] hurtLeft = null; private StandardAnimator hurtsL = null;
-	private BufferedImage[] hurtRight = null; private StandardAnimator hurtsR = null;
+    //Other animators and sprites
+    private BufferedImage[] hurtLeft = null;
+    private StandardAnimator hurtsL = null;
+    private BufferedImage[] hurtRight = null;
+    private StandardAnimator hurtsR = null;
 
-	//Global instance variables
-	public StandardHandler sh;
-	private Player player;
-	private VampireKiller whip;
-	public boolean tryJump = false;
+    //Global instance variables
+    public StandardHandler sh;
+    private Player player;
+    private VampireKiller whip;
+    public boolean tryJump = false;
 
-	//TODO Rework the ai and stuff	
-	public double dist = 0;
+    //TODO Rework the ai and stuff	
+    public double dist = 0;
 
-	//bool for coins
-	private boolean fdp = true;
+    //bool for coins
+    private boolean fdp = true;
 
-	public Richter(double x, double y, StandardHandler sh, Player player){
-		super(x, y, StandardID.Enemy);
+    public Richter(double x, double y, StandardHandler sh, Player player) {
+        super(x, y, StandardID.Enemy);
 
-		this.sh = sh;
-		this.player = player;
-		this.whip = new VampireKiller((StandardCollisionHandler) this.sh,20, new Rectangle((int) 54, (int) (25), 170, 20), 0.35);
+        this.sh = sh;
+        this.player = player;
+        this.whip = new VampireKiller((StandardCollisionHandler) this.sh, 20, new Rectangle((int) 54, (int) (25), 170, 20), 0.35);
 
-		try{
-			this.initImages();
-			this.initAnimators();
-		}catch(Exception e){
-			e.printStackTrace();
-		}
+        try {
+            this.initImages();
+            this.initAnimators();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
-		this.health = 40;
+        this.health = 40;
 
-		this.firstDeathPass = true;
+        this.firstDeathPass = true;
 
-		this.velX = StdOps.rand(-3, -1);
-	}
+        this.velX = StdOps.rand(-3, -1);
+    }
 
-	public void tick(){
-		if(this.health > 0){
+    public void tick() {
+        if (this.health > 0) {
 
-			this.x +=  this.velX;
-			this.y += (int) this.velY;
-			whip.attack(this, player);
+            this.x += this.velX;
+            this.y += (int) this.velY;
+            whip.attack(this, player);
 
-			double dx = Math.abs(x - player.x);
-			double dy = Math.abs(y - player.y);
-			double lastDist = dist;
-			
-			this.dist = (dx > dy) ? dx : dy;
+            double dx = Math.abs(x - player.x);
+            double dy = Math.abs(y - player.y);
+            double lastDist = dist;
 
-			
-			
-			this.velX = (player.x - this.x) * /*Math.random() * 0.01 +*/ 0.01;
-			this.velY = (this.velY + StandardGameObject.gravity);
+            this.dist = (dx > dy) ? dx : dy;
 
-			if(Math.abs(this.player.x - this.x) > 500) velX = 0;
-			
-			if(dist >= lastDist && standing && Math.random() < 0.1)
-				velY -= 5;
+            this.velX = (player.x - this.x) * /*Math.random() * 0.01 +*/ 0.01;
+            this.velY = (this.velY + StandardGameObject.gravity);
 
-			if(this.whip.active){
-				this.velX = 0;
-			}
+            if (Math.abs(this.player.x - this.x) > 500) {
+                velX = 0;
+            }
 
-			if(this.velX < 0){
-				lastDir = Direction.Left;
-				this.lefts.animate();
-			}else if(this.velX > 0){
-				lastDir = Direction.Right;
-				this.rights.animate();
-			}
+            if (dist >= lastDist && standing && Math.random() < 0.1) {
+                velY -= 5;
+            }
 
-			//Clause for if they're hurt
-			if(this.hurt){
+            if (this.whip.active) {
+                this.velX = 0;
+            }
 
-				//If they're facing right, they'll fly left when hurt
-				if(this.lastDir == Direction.Right) {
-					this.hurtsL.animate();
-					this.velX = -20f;
-				}
-				//If they're facing left, they'll fly right when flying
-				else{ 
-					this.hurtsR.animate();
-					this.velX = 20f;
-				}
-				//Either way, when hurt, they'll fly up and back. ******NEEDS FIXING******
-				//this.jump.execute();
-			}else{
+            if (this.velX < 0) {
+                lastDir = Direction.Left;
+                this.lefts.animate();
+            } else if (this.velX > 0) {
+                lastDir = Direction.Right;
+                this.rights.animate();
+            }
 
-			}
+            //Clause for if they're hurt
+            if (this.hurt) {
 
-			this.hurt = false; //Has to be set here so they won't continuously fly back.
-		}
-		this.checkDeath();
-		
-		this.dropCoins();
-		
-		if(this.deathParticles != null){
-			this.deathParticles.tick();
-		}
+                //If they're facing right, they'll fly left when hurt
+                if (this.lastDir == Direction.Right) {
+                    this.hurtsL.animate();
+                    this.velX = -20f;
+                } //If they're facing left, they'll fly right when flying
+                else {
+                    this.hurtsR.animate();
+                    this.velX = 20f;
+                }
+                //Either way, when hurt, they'll fly up and back. ******NEEDS FIXING******
+                //this.jump.execute();
+            } else {
 
-		if(this.y > 1000 || (this.deathParticles != null && this.deathParticles.size() == 0)){
-			this.sh.removeEntity(this);
-			try {
-				Thread.sleep(500);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
-			JOptionPane.showMessageDialog(null, "Glad you had fun!, end of tech demo!");
-			System.exit(0);
-		}
+            }
 
-	}
+            this.hurt = false; //Has to be set here so they won't continuously fly back.
+        }
+        this.checkDeath();
 
-	public void render(Graphics2D g2){
-		if(this.health > 0){
-			double xo = (lastDir == Direction.Left) ? currentSprite.getWidth() - this.width : 0;
-			g2.drawImage(this.currentSprite, (int) (x - xo), (int) y, null);
-			StandardDraw.text(""+this.health, (int) (this.x + this.width / 2), (int) (this.y - 10), Menu.starcraft, 20f, Color.red);
-			
-			
-		}
+        this.dropCoins();
 
-		if(this.deathParticles != null){
-			this.deathParticles.render(g2);
-		}
-		
-		
-	}
+        if (this.deathParticles != null) {
+            this.deathParticles.tick();
+        }
 
-	private void initImages(){
+        if (this.y > 1000 || (this.deathParticles != null && this.deathParticles.size() == 0)) {
+            this.sh.removeEntity(this);
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
 
-		this.leftImages = new BufferedImage[8]; this.rightImages = new BufferedImage[this.leftImages.length];
-		this.attackLeftImages = new BufferedImage[8]; this.attackRightImages = new BufferedImage[this.attackLeftImages.length];
-		this.hurtLeft = new BufferedImage[20]; this.hurtRight = new BufferedImage[this.hurtLeft.length];
+            JOptionPane.showMessageDialog(null, "Glad you had fun!, end of tech demo!");
+            System.exit(0);
+        }
 
-		try{
-			ImageIO.read(new File("res/sprites/richter/ri_s_l.png"));
-			ImageIO.read(new File("res/sprites/richter/ri_s_r.png"));
+    }
 
-			//Loads in the left and right images for walking, as well as the attacking left & rights
-			for(int i = 0; i < leftImages.length; i++){
-				this.leftImages[i] = ImageIO.read(new File("res/sprites/richter/ri_l"+i+".png"));
-				this.rightImages[i] = ImageIO.read(new File("res/sprites/richter/ri_r"+i+".png"));
+    public void render(Graphics2D g2) {
+        if (this.health > 0) {
+            double xo = (lastDir == Direction.Left) ? currentSprite.getWidth() - this.width : 0;
+            g2.drawImage(this.currentSprite, (int) (x - xo), (int) y, null);
+            StandardDraw.text("" + this.health, (int) (this.x + this.width / 2), (int) (this.y - 10), Menu.starcraft, 20f, Color.red);
 
-				this.width += this.leftImages[i].getWidth() + this.rightImages[i].getWidth();
-				this.height += this.leftImages[i].getHeight() + this.rightImages[i].getHeight();
-			}
-			
-			//Loads in the attack images
-			for(int i = 0; i < this.attackLeftImages.length; i++){
-				this.attackLeftImages[i] = ImageIO.read(new File("res/sprites/richter/ri_a_l"+i+".png"));
-				this.attackRightImages[i] = ImageIO.read(new File("res/sprites/richter/ri_a_r"+i+".png"));
-			}
+        }
 
-			//Loads in the hurt imgs
-			//This loads in the hurt image
-			for(int i = 0; i < this.hurtLeft.length; i++){
-				this.hurtLeft[i] = ImageIO.read(new File("res/sprites/richter/ri_h_l.png"));
-				this.hurtRight[i] = ImageIO.read(new File("res/sprites/richter/ri_h_r.png"));
-			}
+        if (this.deathParticles != null) {
+            this.deathParticles.render(g2);
+        }
 
-		}catch(Exception e){ e.printStackTrace(); }
+    }
 
-		this.width = (int) (this.width / (this.leftImages.length + this.rightImages.length));
-		this.height = (int) (this.height / (this.leftImages.length + this.rightImages.length));
-	}
+    private void initImages() {
 
-	private void initAnimators(){
-		this.lefts = new StandardAnimator(new ArrayList<BufferedImage>(Arrays.asList(this.leftImages)), 1/8d, this, StandardAnimator.PRIORITY_3RD);
-		this.rights = new StandardAnimator(new ArrayList<BufferedImage>(Arrays.asList(this.rightImages)), 1/8d, this, StandardAnimator.PRIORITY_3RD);
-		this.aLefts = new StandardAnimator(new ArrayList<BufferedImage>(Arrays.asList(this.attackLeftImages)), 1/30d, this, StandardAnimator.PRIORITY_3RD);
-		this.aRights = new StandardAnimator(new ArrayList<BufferedImage>(Arrays.asList(this.attackRightImages)), 1/30d, this, StandardAnimator.PRIORITY_3RD);
-		this.hurtsL = new StandardAnimator((new ArrayList<BufferedImage>(Arrays.asList(this.hurtLeft))), 1/2d, this, StandardAnimator.PRIORITY_3RD);
-		this.hurtsR = new StandardAnimator((new ArrayList<BufferedImage>(Arrays.asList(this.hurtRight))), 1/2d, this, StandardAnimator.PRIORITY_3RD);
-	}
+        this.leftImages = new BufferedImage[8];
+        this.rightImages = new BufferedImage[this.leftImages.length];
+        this.attackLeftImages = new BufferedImage[8];
+        this.attackRightImages = new BufferedImage[this.attackLeftImages.length];
+        this.hurtLeft = new BufferedImage[20];
+        this.hurtRight = new BufferedImage[this.hurtLeft.length];
 
-	private void dropCoins(){
-		if(this.health <= 0){
-			
-			int amt = StdOps.rand(0, 5);
-			
-			if(this.fdp){
-				for(int i = 0; i < amt; i++){
-					this.sh.addEntity(new Coin(this.x, this.y, (byte) StdOps.rand(0, 40), this.player, (StandardCollisionHandler) this.sh));
-				}
-			}
-			this.fdp = false;
-		}
-	}
+        try {
+            ImageIO.read(new File("res/sprites/richter/ri_s_l.png"));
+            ImageIO.read(new File("res/sprites/richter/ri_s_r.png"));
+
+            //Loads in the left and right images for walking, as well as the attacking left & rights
+            for (int i = 0; i < leftImages.length; i++) {
+                this.leftImages[i] = ImageIO.read(new File("res/sprites/richter/ri_l" + i + ".png"));
+                this.rightImages[i] = ImageIO.read(new File("res/sprites/richter/ri_r" + i + ".png"));
+
+                this.width += this.leftImages[i].getWidth() + this.rightImages[i].getWidth();
+                this.height += this.leftImages[i].getHeight() + this.rightImages[i].getHeight();
+            }
+
+            //Loads in the attack images
+            for (int i = 0; i < this.attackLeftImages.length; i++) {
+                this.attackLeftImages[i] = ImageIO.read(new File("res/sprites/richter/ri_a_l" + i + ".png"));
+                this.attackRightImages[i] = ImageIO.read(new File("res/sprites/richter/ri_a_r" + i + ".png"));
+            }
+
+            //Loads in the hurt imgs
+            //This loads in the hurt image
+            for (int i = 0; i < this.hurtLeft.length; i++) {
+                this.hurtLeft[i] = ImageIO.read(new File("res/sprites/richter/ri_h_l.png"));
+                this.hurtRight[i] = ImageIO.read(new File("res/sprites/richter/ri_h_r.png"));
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        this.width = (int) (this.width / (this.leftImages.length + this.rightImages.length));
+        this.height = (int) (this.height / (this.leftImages.length + this.rightImages.length));
+    }
+
+    private void initAnimators() {
+        this.lefts = new StandardAnimator(new ArrayList<BufferedImage>(Arrays.asList(this.leftImages)), 1 / 8d, this, StandardAnimator.PRIORITY_3RD);
+        this.rights = new StandardAnimator(new ArrayList<BufferedImage>(Arrays.asList(this.rightImages)), 1 / 8d, this, StandardAnimator.PRIORITY_3RD);
+        this.aLefts = new StandardAnimator(new ArrayList<BufferedImage>(Arrays.asList(this.attackLeftImages)), 1 / 30d, this, StandardAnimator.PRIORITY_3RD);
+        this.aRights = new StandardAnimator(new ArrayList<BufferedImage>(Arrays.asList(this.attackRightImages)), 1 / 30d, this, StandardAnimator.PRIORITY_3RD);
+        this.hurtsL = new StandardAnimator((new ArrayList<BufferedImage>(Arrays.asList(this.hurtLeft))), 1 / 2d, this, StandardAnimator.PRIORITY_3RD);
+        this.hurtsR = new StandardAnimator((new ArrayList<BufferedImage>(Arrays.asList(this.hurtRight))), 1 / 2d, this, StandardAnimator.PRIORITY_3RD);
+    }
+
+    private void dropCoins() {
+        if (this.health <= 0) {
+
+            int amt = StdOps.rand(0, 5);
+
+            if (this.fdp) {
+                for (int i = 0; i < amt; i++) {
+                    this.sh.addEntity(new Coin(this.x, this.y, (byte) StdOps.rand(0, 40), this.player, (StandardCollisionHandler) this.sh));
+                }
+            }
+            this.fdp = false;
+        }
+    }
 
 }
