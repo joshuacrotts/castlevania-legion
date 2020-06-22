@@ -1,4 +1,8 @@
-# Castlevania - Legion
+<h1 align="center">Castlevania - Legion</h1>
+
+<p align="center">
+  <img width="460" height="300" src="cl.gif">
+</p>
 
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/7869adbe775b4cabad6d5f65cb79b8fa)](https://app.codacy.com/app/JoshuaCrotts/Castlevania-Legion?utm_source=github.com&utm_medium=referral&utm_content=JoshuaCrotts/Castlevania-Legion&utm_campaign=Badge_Grade_Settings) ![GitHub commit activity](https://img.shields.io/github/commit-activity/m/JoshuaCrotts/Castlevania-Legion) ![GitHub repo size](https://img.shields.io/github/repo-size/JoshuaCrotts/Castlevania-Legion) ![GitHub contributors](https://img.shields.io/github/contributors/JoshuaCrotts/Castlevania-Legion)
 
