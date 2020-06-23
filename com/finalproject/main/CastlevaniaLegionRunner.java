@@ -9,7 +9,7 @@ package com.finalproject.main;
  * distribute particles throughout the world. AI was done as a cooperative effort
  * as well. All files and images are rightfully owned by their creators; most of 
  * them coming straight from other Castlevania games such as Aria of Sorrow, Dawn
- * of Sorrow, etc. I have to than Andrew for doing the physics, because, the 
+ * of Sorrow, etc. I have to thank Andrew for doing the physics, because, the 
  * restitution methods and functionality was incredibly difficult and most likely
  * couldn't have done it without him.
  * 
